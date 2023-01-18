@@ -1,0 +1,408 @@
+﻿<Window x:Class="WpfVoiceAssistent.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:uc="clr-namespace:WpfVoiceAssistent.UserControls"
+        xmlns:Icon="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:m="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF"
+        
+        ResizeMode="NoResize"
+        AllowsTransparency="True" WindowStyle="None" WindowStartupLocation="CenterScreen"
+        Background="Transparent" Title="MainWindow" Height="760" Width="1280" Padding="-100 0 0 0" Loaded="Window_Loaded">
+
+    <Border CornerRadius="25" Background="#151f2d" MouseDown="Border_MouseDown">
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="5*"/>
+                <ColumnDefinition Width="59*"/>
+            </Grid.ColumnDefinitions>
+            <!-- <Grid.RowDefinitions>
+                <RowDefinition Height="auto" MinHeight="297"/>
+                <RowDefinition Height="auto" MinHeight="42"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>-->
+
+            <!-- Left Munu  xmlns:local="clr-namespace:WpfVoiceAssistent"-->
+            <Border Background="#1e2e44" CornerRadius="25 0 0 25">
+                <Grid>
+                    <StackPanel VerticalAlignment="Top">
+                        <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center" Margin="0 30 0 40">
+                            <Ellipse Width="8" Height="8" Fill="#eb1700"/>
+                            <Ellipse Width="8" Height="8" Fill="#ffaf01" Margin="7 0"/>
+                            <Ellipse Width="8" Height="8" Fill="#009d00"/>
+                        </StackPanel>
+
+                        <!--Menu button-->
+                        <!--PlaylistMusic Music FileVideo PictureInPictureTopRightOutline PhoneAlert-->
+                        <uc:Menubutton x:Name="ButtonPlaylist" Icon="PlaylistMusic" MouseDoubleClick="ButtonPlaylist_MouseDoubleClick"/>
+                        <uc:Menubutton x:Name="ButtonMusic" Icon="Music" MouseDoubleClick="ButtonMusic_MouseDoubleClick"/>
+                        <uc:Menubutton x:Name="ButtonImage" Icon="Image" MouseDoubleClick="ButtonImage_MouseDoubleClick"/>
+                        <uc:Menubutton x:Name="ButtonSupport" Icon="PhoneAlert" MouseDoubleClick="ButtonSupport_MouseDoubleClick"/>
+                        <uc:Menubutton x:Name="ButtonSetting" Icon="CogOutline" MouseDoubleClick="ButtonSetting_MouseDoubleClick"/>
+                    </StackPanel>
+
+                    <uc:Menubutton Icon="Power" VerticalAlignment="Bottom" Margin="0 0 0 15"  MouseDoubleClick="ButtonExit_MouseDoubleClick"/>
+                </Grid>
+
+
+            </Border>
+
+            <Grid Visibility="Visible" Name="GridPlaylist" Grid.Column="1" HorizontalAlignment="Left" Height="740" Margin="10,10,0,0" VerticalAlignment="Top" Width="1160">
+                <Border Margin="30,30,30,30">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="BorderBrush" Value="Black"/>
+                            <Setter Property="BorderThickness" Value="1.5"/>
+                            <Setter Property="Background" Value="#1e2e44"/>
+                        </Style>
+                    </Border.Style>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.7*"/>
+                                <RowDefinition Height="3*"/>
+                                <RowDefinition Height="0.7*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="Имеющиеся плейлисты" Style="{StaticResource textBlockStyle}"/>
+                            <ListBox Name="AllPlaylistList" Grid.Row="1" Style="{StaticResource listBoxstyle}"/>
+
+                            <Button Grid.Row="2" Click="Button_Click" HorizontalAlignment="Left" Content="Добавить песню" Style="{StaticResource buttonForm}" Margin="90 0 0 0"/>
+                            <Button Grid.Row="2" Click="Button_Click_1" HorizontalAlignment="Right" Content="Обновить список" Style="{StaticResource buttonForm}" Margin="30 0 90 0"/>
+
+                            <TextBlock Grid.Row="3" Text="Новый плейлист" Style="{StaticResource textBlockStyle}" VerticalAlignment="Bottom"/>
+                            <uc:Menubutton Grid.Row="4" Icon="PlaylistEdit" HorizontalAlignment="Left" Margin="30 0 0 0"/>
+                            <TextBlock Grid.Row="4" FontSize="16" Margin="50 0 0 0" Text="Название плейлиста" Style="{StaticResource textBlockStyle}" HorizontalAlignment="Left"/>
+                            <TextBox Grid.Row="4" Name="txtNameForNewPlaylist" Style="{StaticResource txtBox}" HorizontalAlignment="Right" MinWidth="280"/>
+                            <Button Grid.Row="5" Name="CreateNewPlaylist" Click="CreateNewPlaylist_Click" HorizontalAlignment="Center" Content="Создать плейлист" Style="{StaticResource buttonForm}" VerticalAlignment="Top" Margin="0 0 0 0" MinHeight="50" MinWidth="250"/>
+                        </Grid>
+
+
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="0.7*"/>
+                                <RowDefinition Height="7*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="Ваши песни" Style="{StaticResource textBlockStyle}"/>
+                            <ListBox Name="AllMusicList" Grid.Row="1" Style="{StaticResource listBoxstyle}" Margin="30 0 30 30"/>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid Visibility="Hidden" Name="GridMusic" Grid.Column="1" HorizontalAlignment="Left" Height="740" Margin="10,10,0,0" VerticalAlignment="Top" Width="1160" >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Border Margin="50,50,636,526">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="BorderBrush" Value="Black"/>
+                            <Setter Property="BorderThickness" Value="1.5"/>
+                        </Style>
+                    </Border.Style>
+                    <Grid Background="#1e2e44" Margin="0,0,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto" MinHeight="43"/>
+                            <RowDefinition Height="auto" MinHeight="55"/>
+                        </Grid.RowDefinitions>
+
+
+                        <TextBlock Grid.RowSpan="1" Text="Название песни:" Style="{StaticResource textBlockStyle}"/>
+                        <TextBlock Name="txtBoxNameMusicForPlaying" Grid.Row="1" Text="Название" Style="{StaticResource textBlockStyle}" FontSize="20" />
+
+                        <Grid  Grid.Row="2"  Background="#1e2e44" Margin="0,0,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Name="ButtomStopMusic" Click="ButtomStopMusic_Click" Grid.Column="0" Margin="0 0 0 0" Content="Стоп" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Center"  Style="{StaticResource buttonForm}"/>
+                            <Button Name="ButtomPlayMusic" Click="ButtomPlayMusic_Click" Grid.Column="1" Margin="0 0 0 0" Content="Плей" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Center"  Style="{StaticResource buttonForm}"/>
+                            <Button Name="ButtomPauseMusic" Click="ButtomPauseMusic_Click" Grid.Column="2" Margin="0 0 0 0"  Content="Пауза" MinWidth="100" VerticalAlignment="Center" HorizontalAlignment="Center"   Style="{StaticResource buttonForm}"/>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <Border Margin="570,50,72,526">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="BorderBrush" Value="Black"/>
+                            <Setter Property="BorderThickness" Value="1.5"/>
+                        </Style>
+                    </Border.Style>
+                    <Grid Background="#1e2e44" Margin="0,0,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.RowSpan="1" Text="Изменение громкости" Foreground="#f3f3f3" FontSize="26" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0 30 0 0"/>
+                        <Slider IsEnabled="False" Grid.Row="1" Name="SliderNoise" VerticalAlignment="Center" HorizontalAlignment="Center" Height="40" Width="400" Margin="0 30 0 0" ValueChanged="Slider_ValueChanged" Maximum="100"/>
+
+                    </Grid>
+                </Border>
+
+                <Border Margin="50,262,72,39">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="BorderBrush" Value="Black"/>
+                            <Setter Property="BorderThickness" Value="1.5"/>
+                        </Style>
+                    </Border.Style>
+                    <Grid Background="#1e2e44" Margin="0,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" MinWidth="513"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Добавить музыку" Style="{StaticResource textBlockStyle}"/>
+                            <TextBox Name="txtBoxPathMusic" Text="Выбранный путь" Style="{StaticResource txtBox}" IsReadOnly="True"/>
+                            <TextBox Name="txtBoxNameMusic" Text="Введите название музыку" Style="{StaticResource txtBox}"/>
+                            <TextBox Name="txtBoxAuthorMusic" Text="Введите автора музыки" Style="{StaticResource txtBox}" Margin="30 10 30 10"/>
+                            <TextBlock Text="Выберите плейлист, в который хотите добавить песню" Style="{StaticResource textBlockStyle}" FontSize="16" Margin="10 10 10 0"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+                                <ListBox Grid.Column="0" x:Name="listFullPlaylist" Style="{StaticResource listBoxstyle}"/>
+                                <Button Grid.Column="1" x:Name="ButtomSetMusicInDB" Click="ButtomSetMusicInDB_Click" Margin="0 0 0 0"  Content="Добавить песню" MinWidth="100" MinHeight="50" VerticalAlignment="Center" HorizontalAlignment="Center"   Style="{StaticResource buttonForm}"/>
+                            </Grid>
+                        </StackPanel>
+
+
+
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="8*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="Список всех недобавленных песен" FontSize="16" Style="{StaticResource textBlockStyle}"/>
+                            <ListBox x:Name="listNewMusic" Grid.Row="1" Style="{StaticResource listBoxstyle}" Margin="30 0 30 30" MouseDoubleClick="listNewMusic_MouseDoubleClick"/>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Grid Visibility="Hidden" Name="GridImage" Grid.Column="1" HorizontalAlignment="Left" Height="740" Margin="10,10,0,0" VerticalAlignment="Top" Width="1160">
+                <Border Margin="30,30,30,30">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="BorderBrush" Value="Black"/>
+                            <Setter Property="BorderThickness" Value="1.5"/>
+                        </Style>
+                    </Border.Style>
+
+                    <Grid Background="#1e2e44" Margin="0,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto" MinWidth="513"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="8*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="Список названия всех картинок" FontSize="16" Style="{StaticResource textBlockStyle}"/>
+                            <ListBox Name="NameImageFileList" Grid.Row="1" Style="{StaticResource listBoxstyle}" Margin="30 0 30 30"/>
+                        </Grid>
+
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="8*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="Список названия всех видео" FontSize="16" Style="{StaticResource textBlockStyle}"/>
+                            <ListBox Name="NameVideoFileList" Grid.Row="1" Style="{StaticResource listBoxstyle}" Margin="30 0 30 30"/>
+                        </Grid>
+                    </Grid>
+
+                </Border>
+            </Grid>
+
+            <Grid Visibility="Hidden" Name="GridAlert" Grid.Column="1" HorizontalAlignment="Left" Height="740" Margin="10,10,0,0" VerticalAlignment="Top" Width="1160">
+                <Border Margin="30,30,30,30">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="BorderBrush" Value="Black"/>
+                            <Setter Property="BorderThickness" Value="1.5"/>
+                            <Setter Property="Background" Value="#1e2e44"/>
+                        </Style>
+                    </Border.Style>
+
+                    <Grid Background="#1e2e44">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="2*"/>
+                                <!--0-->
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="0.5*"/>
+                                <RowDefinition Height="0.5*"/>
+                                <!--Буфер - 3-->
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="0.6*"/>
+                                <RowDefinition Height="0.5*"/>
+                                <!--Буфер - 6-->
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="0.7*"/>
+                                <RowDefinition Height="4.7*"/>
+                                <!--9-->
+
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Text="СВЯЖИТЕСЬ С НАМИ" FontSize="46" Style="{StaticResource textBlockStyle}"/>
+
+                            <uc:Menubutton Grid.Row="1" HorizontalAlignment="Left" Margin="30 0 30 0" Icon="Phone"/>
+                            <TextBlock Grid.Row="1" Style="{StaticResource textBlockStyle}" FontSize="28" Text="Call Us"  Margin="60 0 30 0" HorizontalAlignment="Left"/>
+                            <TextBlock Grid.Row="2" Style="{StaticResource textBlockStyle}" Foreground="LightGray" FontWeight="Normal" FontSize="16" Text="+7(921)878-44-49 ,   +7(921)098-09-38"  Margin="30 0 30 0" HorizontalAlignment="Left"/>
+
+                            <uc:Menubutton Grid.Row="4" HorizontalAlignment="Left" Margin="30 0 30 0" Icon="HumanQueue"/>
+                            <TextBlock Grid.Row="4" Style="{StaticResource textBlockStyle}" FontSize="28" Text="Мы в социальных сетях"  Margin="60 0 30 0" HorizontalAlignment="Left"/>
+                            <Label Grid.Row="5"  FontSize="16"  HorizontalAlignment="Left" Margin="30 0 30 0">
+                                <Hyperlink Foreground="AliceBlue" NavigateUri="https://web.telegram.org/" RequestNavigate="Hyperlink_RequestNavigate">
+                                    Telegram
+                                </Hyperlink>
+                            </Label>
+                            <Label Grid.Row="5"  FontSize="16" HorizontalAlignment="Center" Margin="30 0 30 0">
+                                <Hyperlink Foreground="AliceBlue" NavigateUri="https://vk.com/" RequestNavigate="Hyperlink_RequestNavigate">
+                                    Вконтакте
+                                </Hyperlink>
+                            </Label>
+                            <Label Grid.Row="5"  FontSize="16"  HorizontalAlignment="Right" Margin="120 0 30 0">
+                                <Hyperlink Foreground="AliceBlue" NavigateUri="https://www.instagram.com/" RequestNavigate="Hyperlink_RequestNavigate">
+                                    Instagram
+                                </Hyperlink>
+                            </Label>
+                            <uc:Menubutton Grid.Row="7" HorizontalAlignment="Left" Margin="30 0 30 0" Icon="Map"/>
+                            <TextBlock Grid.Row="7" Style="{StaticResource textBlockStyle}" FontSize="28" Text="Местоположение"  Margin="60 0 30 0" HorizontalAlignment="Left"/>
+                            <TextBlock Grid.Row="8"  Text="Адрес: Город Никольская, ул. Заводская, д. 6"  Margin="30 0 30 0" Style="{StaticResource textBlockStyle}" Foreground="LightGray" FontWeight="Normal" FontSize="16" HorizontalAlignment="Left"/>
+                            <Button Grid.Row="8" Name="ButtonMap" Style="{StaticResource buttonForm}" FontSize="12" Padding="0" HorizontalAlignment="Right" Margin="0,0,20,0" Content="Показать на карте" MinWidth="130" Click="ButtonMap_Click"/>
+
+                            <Grid x:Name="LayoutRoot" Background="Transparent" Grid.Row="9" Margin="20">
+                                <m:Map CredentialsProvider="AR6EBpr4o5SGEskSkQmw~EVKRJdPZyGHszXasD0ciXQ~AkksINLr84UkxKCuYXSZ6ydXIR5j-QLhexHU29JRQ0zKSsa2RxKAW2nSWmy-i-AE" Mode="AerialWithLabels" 
+                                       Center="59.707624, 30.787825" ZoomLevel="16" x:Name="MapAdress">
+                                    <m:MapPolygon Fill="Blue" Stroke="Green" StrokeThickness="5" Locations="59.707831,30.787579 59.707846,30.788138 59.707435,30.788155 59.707434,30.787576" Opacity="0.4"/>
+                                </m:Map>
+                            </Grid>
+
+                        </Grid>
+
+
+
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="5*"/>
+                                <RowDefinition Height="1*"/>
+
+                            </Grid.RowDefinitions>
+
+
+                            <uc:Menubutton Grid.Row="1" Icon="Label" HorizontalAlignment="Left" Margin="30 0 30 0"/>
+                            <TextBlock Grid.Row="1" Text="Ваш e-mail:" Style="{StaticResource textBlockStyle}" HorizontalAlignment="Left" Margin="60 10 30 10" FontSize="18"/>
+                            <TextBox Grid.Row="1" x:Name="txtFromEmail" Text="Впишите e-mail" Style="{StaticResource txtBox}" Margin="250 0 30 0"/>
+
+                            <uc:Menubutton Grid.Row="2" Icon="Email" HorizontalAlignment="Left" Margin="30 0 30 0"/>
+                            <TextBlock Grid.Row="2" Text="E-mail получателя:" Style="{StaticResource textBlockStyle}" HorizontalAlignment="Left" Margin="60 10 30 10" FontSize="18"/>
+                            <TextBox Grid.Row="2" Foreground="LightGray" x:Name="txtToEmail" IsReadOnly="True" Text="voice.assistent.clients@mail.ru" Style="{StaticResource txtBox}" Margin="250 0 30 0"/>
+
+                            <TextBlock Grid.Row="3" Text="Тема:" Style="{StaticResource textBlockStyle}" HorizontalAlignment="Left" Margin="20 10 20 10" FontSize="18"/>
+                            <TextBox Grid.Row="3" x:Name="txtTopicEmail" Text="Тема письма" Style="{StaticResource txtBox}" Margin="100 0 30 0"/>
+
+                            <StackPanel Grid.Row="4">
+                                <TextBlock Text="Сообщение:" Style="{StaticResource textBlockStyle}" HorizontalAlignment="Center" FontSize="18" Margin=" 0 0 0 0"/>
+                                <TextBox  x:Name="txtMessageEmail" Text="Текст письма" Style="{StaticResource txtBox}" Height="283" Margin=" 30 0 30 0"/>
+                            </StackPanel>
+
+                            <Button Grid.Row="5" x:Name="buttonSendMessage" Click="buttonSendMessage_Click" Content="Отправить письмо" Style="{StaticResource buttonForm}" Margin=" 150 0 150 10"/>
+                        </Grid>
+
+                    </Grid>
+
+                </Border>
+
+            </Grid>
+
+            <Grid Visibility="Hidden" Name="GridSetting" Grid.Column="1" HorizontalAlignment="Left" Height="740" Margin="10,10,0,0" VerticalAlignment="Top" Width="1160">
+                <Border Margin="30,30,30,30">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="BorderBrush" Value="Black"/>
+                            <Setter Property="BorderThickness" Value="1.5"/>
+                        </Style>
+                    </Border.Style>
+
+                    <Grid Background="#1e2e44" Margin="0,0,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="2*"/>
+                            <RowDefinition Height="3*"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Grid.Row="0">
+                            <TextBlock Text="Добавить или изменить путь" Style="{StaticResource textBlockStyle}"/>
+                            <TextBlock Text="Выберите путь, который хотите изменить" Style="{StaticResource textBlockStyle}" FontSize="16" Margin="10 10 10 0"/>
+                            <ListBox x:Name="ListPathToChange" Style="{StaticResource listBoxstyle}" Margin="90 0 90 0"/>
+                            <Button x:Name="buttonСhangePath" Click="buttonСhangePath_Click" Content="Поменять путь" Style="{StaticResource buttonForm}"/>
+                        </StackPanel>
+
+                        <Grid Grid.Row="1" Background="#1e2e44" Margin="0,0,0,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="2*"/>
+                                <RowDefinition Height="2*"/>
+                                <RowDefinition Height="2*"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock  Grid.Row="1" Text="Добавить новый путь" Style="{StaticResource textBlockStyle}"/>
+
+                            <uc:Menubutton Grid.Row="2" Icon="PlaylistMusic" HorizontalAlignment="Left" Margin="30 0 30 0"/>
+                            <TextBlock Grid.Row="2" Text="Путь для музыки" Style="{StaticResource textBlockStyle}" HorizontalAlignment="Left" Margin="60 10 30 10" FontSize="18"/>
+                            <Button Grid.Row="2" Click="buttonNewPathMusic_Click" x:Name="buttonNewPathMusic" Content="Выбрать путь" Style="{StaticResource buttonForm}" Margin="300 0 60 0"/>
+
+                            <uc:Menubutton Grid.Row="3" Icon="Image" HorizontalAlignment="Left" Margin="30 0 30 0"/>
+                            <TextBlock Grid.Row="3" Text="Путь для фото" Style="{StaticResource textBlockStyle}" HorizontalAlignment="Left" Margin="60 10 30 10" FontSize="18"/>
+                            <Button Grid.Row="3" Click="buttonNewPathPhoto_Click"  x:Name="buttonNewPathPhoto" Content="Выбрать путь" Style="{StaticResource buttonForm}" Margin="300 0 60 0"/>
+
+                            <uc:Menubutton Grid.Row="4" Icon="Video" HorizontalAlignment="Left" Margin="30 0 30 0"/>
+                            <TextBlock Grid.Row="4" Text="Путь для видео" Style="{StaticResource textBlockStyle}" HorizontalAlignment="Left" Margin="60 10 30 10" FontSize="18"/>
+                            <Button Grid.Row="4" Click="buttonNewPathVideo_Click" x:Name="buttonNewPathVideo" Content="Выбрать путь" Style="{StaticResource buttonForm}" Margin="300 0 60 0"/>
+
+
+
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+
+    </Border>
+
+</Window>
