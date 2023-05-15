@@ -11,14 +11,26 @@ namespace WpfVoiceAssistent.Audio
     {
         public WMPLib.WindowsMediaPlayer Player;
 
+
         public AudioPlayer(string url)
         {
+
+
             Player = new WMPLib.WindowsMediaPlayer();
             Player.URL = url;
         }
         public AudioPlayer()
         {
             Player = new WMPLib.WindowsMediaPlayer();
+        }
+
+        public void StopLoop()
+        {
+            Player.settings.setMode("loop", false);
+        }
+        public void StartLoop()
+        {
+            Player.settings.setMode("loop", true);
         }
 
         public void openPlaylist(List<string> _musicPath)
@@ -36,6 +48,8 @@ namespace WpfVoiceAssistent.Audio
 
         public void StartSong()
         {
+
+
             Player.controls.play();
         }
 

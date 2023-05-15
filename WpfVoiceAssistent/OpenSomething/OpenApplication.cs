@@ -7,46 +7,22 @@ using System.Threading.Tasks;
 
 namespace WpfVoiceAssistent.OpenSomething
 {
-    internal class OpenApplication
+    public class OpenApplication
     {
-        public static string StartProgramm(string[] _namePrograms)
+        public static void StartProgramm(string _namePrograms)
         {
-            string _NameForVoice = "";
-            foreach (string _nameProgram in _namePrograms)
+            foreach (string[] _aboutProgram in CreateGrammar.Programm_List)
             {
-                switch (_nameProgram)
+                if (_aboutProgram[1] == _namePrograms) 
                 {
-                    case "стим":
-                        Process.Start(@"E:\Program Files (x86)\Steam\steam.exe");//путь к Стиму
-                        break;
-                    case "гугл":
-                        Process.Start(@"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe");//путь к гуглу
-                        break;
-                    case "вконтакте":
-                        Process.Start(@"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe", "https://vk.com/");//ссылка на вк
-                        break;
-                    case string _wordInCase when (_wordInCase == "телеграм" || _wordInCase == "телеграмм"):
-                        Process.Start(@"E:\Доп.проги\Telega\Telegram Desktop\Telegram.exe");//путь к телеграму
-                        break;
-                    case "рабочую таблицу":
-                        Process.Start(@"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe", "https://docs.google.com/spreadsheets/d/1c_YCoF7NfEPbIzega-rFxkveMq8ubC8F/edit#gid=1216431847");//путь к гуглу
-                        break;
-                    case "дискорд":
-                        Process.Start(@"C:\Users\PC\AppData\Local\Discord\app-1.0.9008\Discord.exe");//путь к дискорду
-                        break;
-                    case " ":
-                        break;
-                    case "":
-                        break;
+                    if (_aboutProgram[3] != "" || _aboutProgram[3] != " " || _aboutProgram[3] != null)
+                        Process.Start(_aboutProgram[2], _aboutProgram[3]);
+                    else if (_aboutProgram[3] == "" || _aboutProgram[3] == " " || _aboutProgram[3] == null)
+                        Process.Start(_aboutProgram[2]);
                 }
-                _NameForVoice += _nameProgram + ", ";
             }
-            return _NameForVoice;
         }
 
-
-        private static List<string> _nameProgremsForStart = new List<string>();
-        private static string[] myArr = new string[CreateGrammar._ListsForGrammar.NameProgram.ToArray().Length];
 
         /// <summary>
         /// Запускает протокол с заданным названием (стандартный/рабочий/игровой/полный)
@@ -55,37 +31,29 @@ namespace WpfVoiceAssistent.OpenSomething
         /// <returns> Возвращает название всех запущенных программ</returns>
         public static string StartProtocol(string _nameProt)
         {
-            switch (_nameProt)
+            string numProtStr = "";
+            foreach (string[] _aboutProgram in CreateGrammar.Protocol_List)
             {
-                case "стандартный":
-                    _nameProgremsForStart.Add("гугл");
-                    _nameProgremsForStart.Add("вконтакте");
-                    _nameProgremsForStart.Add("телеграм");
-                    _nameProgremsForStart.CopyTo(myArr);
-                    return StartProgramm(myArr);
-
-                case "рабочий":
-                    _nameProgremsForStart.Add("телеграм");
-                    _nameProgremsForStart.Add("гугл");
-                    _nameProgremsForStart.Add("рабочую таблицу");
-                    _nameProgremsForStart.CopyTo(myArr);
-                    return StartProgramm(myArr);
-
-                case "игровой":
-                    _nameProgremsForStart.Add("дискорд");
-                    _nameProgremsForStart.Add("стим");
-                    _nameProgremsForStart.Add("гугл");
-                    _nameProgremsForStart.Add("вконтакте");
-                    _nameProgremsForStart.CopyTo(myArr);
-                    return StartProgramm(myArr);
-
-                case "полный":
-                    _nameProgremsForStart.AddRange(CreateGrammar._ListsForGrammar.NameProgram.ToArray());
-                    _nameProgremsForStart.CopyTo(myArr);
-                    return StartProgramm(myArr);
-
+                if (_aboutProgram[1] == _nameProt)
+                {
+                    numProtStr = _aboutProgram[0];
+                }
             }
-            return "";
+
+            List<string[]> ProtProgram = ControlDB.Class.SQL_Select($"SELECT [Название],[Путь],[Дополнительная ссылка] FROM [Программы] where [ID Программы] in (select[ID Программы] from [ПрограммаСвязьПротоколы] where [ID Протокола] = '{numProtStr}')") ;
+            string name = "";
+
+            foreach (string[] _Programs in ProtProgram)
+            {
+                name += _Programs[0] + " ";
+
+                if (_Programs[2] != "" || _Programs[2] != " " || _Programs[2] != null)
+                    Process.Start(_Programs[1], _Programs[2]);
+                else if (_Programs[2] == "" || _Programs[2] == " " || _Programs[2] == null)
+                    Process.Start(_Programs[1]);
+            }
+            return name;
+
         }
     }
 }

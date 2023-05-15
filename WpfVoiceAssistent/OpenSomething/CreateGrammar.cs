@@ -17,6 +17,7 @@ namespace WpfVoiceAssistent.OpenSomething
         public static CultureInfo _language = new CultureInfo("ru-RU");
         public static DirectoryInfo directoryInfoFolder;
         public static Item _ListsForGrammar;
+        public static Dictionary<string, string> DictAnswerJSON = new Dictionary<string, string>();
         //названия всех файлов
         public static List<string[]> FileList = new List<string[]>();
         public static List<string[]> PlaylistList = new List<string[]>();
@@ -24,6 +25,9 @@ namespace WpfVoiceAssistent.OpenSomething
 
         public static List<string> Playlist_ID_List = new List<string>();
         public static List<string> Playlist_Name_List = new List<string>();
+
+        public static List<string[]> Programm_List = new List<string[]>();
+        public static List<string[]> Protocol_List = new List<string[]>();
 
         public static List<string> MusicFilePath = new List<string>();
         public static List<string> MusicName = new List<string>();
@@ -37,7 +41,12 @@ namespace WpfVoiceAssistent.OpenSomething
 
                 _ListsForGrammar = JsonConvert.DeserializeObject<Item>(json);
             }
-            _StartGameWithstartWord = new string[][] { _ListsForGrammar.StartAll.ToArray(), _ListsForGrammar.NameProgram.ToArray() };
+
+            string[] lines = System.IO.File.ReadAllLines(@"F:\КурсоваяТРПО\WpfVoiceAssistent\WpfVoiceAssistent\Answer.txt");
+            foreach (string line in lines)
+            {
+                DictAnswerJSON.Add(line.Substring(0, line.IndexOf('/')), line.Substring(line.IndexOf('/')+1));
+            }
         }
 
         /// <summary>
@@ -70,6 +79,38 @@ namespace WpfVoiceAssistent.OpenSomething
                 MessageBox.Show("Ошибка: " + ex.Message);
                 return null;
             }
+        }
+        public static Grammar PersonAnswerGrammar()
+        {
+            
+            GrammarBuilder grammarBuilderMusic = new GrammarBuilder();
+            grammarBuilderMusic.Culture = _language;
+            
+            grammarBuilderMusic.Append(new Choices(DictAnswerJSON.Keys.ToArray()));
+
+            return new Grammar(grammarBuilderMusic);
+           
+        }
+
+        public static Grammar LoopMusicGrammar()
+        {
+
+            Choices cp_loop = new Choices(_ListsForGrammar.AudioName.ToArray()); //Создание Выборки
+
+            GrammarBuilder gb_P1 = new GrammarBuilder();
+            GrammarBuilder gb_P2 = new GrammarBuilder();
+            gb_P1.Culture = _language; gb_P2.Culture = _language;
+
+            //Первый шаблон построения фразы
+            gb_P1.Append("повторяй");
+            gb_P1.Append(cp_loop);
+
+            //второй шаблон построения фразы уже в другом GrammarBuilder
+            gb_P2.Append("перестань повторять");
+            gb_P2.Append(cp_loop);
+
+            return new Grammar(new Choices(new GrammarBuilder[] { gb_P1, gb_P2 }));
+
         }
 
         public static Grammar LocalAudioGrammar()
@@ -174,47 +215,70 @@ namespace WpfVoiceAssistent.OpenSomething
 
         public static Grammar ProgrammGrammar()
         {
-            Choices ch_StartSMTH = new Choices(_ListsForGrammar.StartAll.ToArray());
-            Choices ch_StartGame = new Choices(_ListsForGrammar.NameProgram.ToArray());
+            try
+            {
+                //Все названия всех программ
+                Programm_List = ControlDB.Class.SQL_Select($"select [ID Программы],[Название],[Путь],[Дополнительная ссылка] from [Программы]");
 
-            GrammarBuilder gb_PlayStart = new GrammarBuilder();
-            gb_PlayStart.Culture = _language;
-            //Заполняем шаблон GrammarBuilder «"Запуск" + "Название игры"»
-            gb_PlayStart.Append(ch_StartSMTH);
-            gb_PlayStart.Append(ch_StartGame);
+                List<string>  nameProg = new List<string>();
+                foreach (string[] both in Programm_List)
+                {
+                    nameProg.Add(both[1]);
+                }
 
+                _StartGameWithstartWord = new string[][] { _ListsForGrammar.StartAll.ToArray(), nameProg.ToArray() };
 
-            Grammar g_StartStop = new Grammar(gb_PlayStart);
+                GrammarBuilder grammarBuilderPlaylist = new GrammarBuilder();
+                grammarBuilderPlaylist.Culture = _language;
+                grammarBuilderPlaylist.Append(new Choices(_ListsForGrammar.StartAll.ToArray()));
+                grammarBuilderPlaylist.Append(new Choices("плейлист"));
+                grammarBuilderPlaylist.Append(new Choices(nameProg.ToArray()));
 
-            return g_StartStop;
+                return new Grammar(grammarBuilderPlaylist);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка: " + ex.Message);
+                return null;
+            }
+
         }
 
         public static Grammar ProtocolGrammar()
         {
-            Choices ch_StartSMTH = new Choices(_ListsForGrammar.StartAll.ToArray());
-            Choices ch_Protocol = new Choices(_ListsForGrammar.NameProtocol.ToArray());
+            try
+            {
+                //Все названия всех программ
+                Protocol_List = ControlDB.Class.SQL_Select($"select [ID Протокола],[Название протокола] from [Протокол]");
 
-            GrammarBuilder gb_P1 = new GrammarBuilder();
-            GrammarBuilder gb_P2 = new GrammarBuilder();
-            gb_P1.Culture = _language; gb_P2.Culture = _language;
+                List<string> nameProt = new List<string>();
+                foreach (string[] both in Protocol_List)
+                {
+                    nameProt.Add(both[1]);
+                }
 
-            //Первый шаблон построения фразы
-            gb_P1.Append(ch_StartSMTH);
-            gb_P1.Append(ch_Protocol);
-            gb_P1.Append("протокол");
+                GrammarBuilder gb_P1 = new GrammarBuilder();
+                GrammarBuilder gb_P2 = new GrammarBuilder();
+                gb_P1.Culture = _language; gb_P2.Culture = _language;
 
-            //второй шаблон построения фразы уже в другом GrammarBuilder
-            gb_P2.Append(ch_StartSMTH);
-            gb_P2.Append("протокола");
-            gb_P2.Append(ch_Protocol);
+                //Первый шаблон построения фразы
+                gb_P1.Append(new Choices(_ListsForGrammar.StartAll.ToArray()));
+                gb_P1.Append(new Choices(nameProt.ToArray()));
+                gb_P1.Append("протокол");
 
+                //второй шаблон построения фразы уже в другом GrammarBuilder
+                gb_P2.Append(new Choices(_ListsForGrammar.StartAll.ToArray()));
+                gb_P2.Append("протокола");
+                gb_P2.Append(new Choices(nameProt.ToArray()));
 
-            // Create a Choices for the two alternative phrases, convert the Choices  
-            // to a GrammarBuilder, and construct the grammar from the result.  
-            Choices bothChoices = new Choices(new GrammarBuilder[] { gb_P1, gb_P2 });
+                return new Grammar(new Choices(new GrammarBuilder[] { gb_P1, gb_P2 }));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка: " + ex.Message);
+                return null;
+            }
 
-            Grammar g_V = new Grammar(bothChoices); //управляющий Grammar
-            return g_V;
         }
 
         public static Grammar OnOffPCGrammar()
@@ -377,14 +441,12 @@ namespace WpfVoiceAssistent.OpenSomething
         #endregion
 
     }
+
     public class Item
     {
         public List<string> StartStopActiveLaunch;
         public List<string> StartAll;
         public List<string> StopAll;
-
-        public List<string> NameProgram;
-        public List<string> NameProtocol;
 
         public List<string> Weather;
         public List<string> AudioName;
@@ -393,5 +455,10 @@ namespace WpfVoiceAssistent.OpenSomething
         public List<string> Compliments;
         public List<string> JustJoke;
         public List<string> Ternlaugh;
+    }
+
+    public class ItemAnswer
+    {
+        public List<string> StartStopActiveLaunch;
     }
 }

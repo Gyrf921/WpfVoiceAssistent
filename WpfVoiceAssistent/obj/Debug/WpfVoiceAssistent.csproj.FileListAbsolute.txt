@@ -163,7 +163,6 @@ F:\КурсоваяТРПО\WpfVoiceAssistent\WpfVoiceAssistent\bin\Debug\System
 F:\КурсоваяТРПО\WpfVoiceAssistent\WpfVoiceAssistent\bin\Debug\Microsoft.Speech.dll
 F:\КурсоваяТРПО\WpfVoiceAssistent\WpfVoiceAssistent\bin\Debug\System.Speech.dll
 F:\КурсоваяТРПО\WpfVoiceAssistent\WpfVoiceAssistent\bin\Debug\System.Speech.xml
-F:\КурсоваяТРПО\WpfVoiceAssistent\WpfVoiceAssistent\obj\Debug\WpfVoiceAssistent.csproj.SuggestedBindingRedirects.cache
 F:\КурсоваяТРПО\WpfVoiceAssistent\WpfVoiceAssistent\bin\Debug\Hardcodet.NotifyIcon.Wpf.dll
 F:\КурсоваяТРПО\WpfVoiceAssistent\WpfVoiceAssistent\bin\Debug\Hardcodet.NotifyIcon.Wpf.xml
 F:\КурсоваяТРПО\WpfVoiceAssistent\WpfVoiceAssistent\obj\Debug\UserControls\Trey.g.cs

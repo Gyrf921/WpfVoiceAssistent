@@ -16,17 +16,11 @@
                 <ColumnDefinition Width="5*"/>
                 <ColumnDefinition Width="59*"/>
             </Grid.ColumnDefinitions>
-            <!-- <Grid.RowDefinitions>
-                <RowDefinition Height="auto" MinHeight="297"/>
-                <RowDefinition Height="auto" MinHeight="42"/>
-                <RowDefinition/>
-            </Grid.RowDefinitions>-->
 
-            <!-- Left Munu  xmlns:local="clr-namespace:WpfVoiceAssistent"-->
             <Border Background="#1e2e44" CornerRadius="25 0 0 25">
                 <Grid>
                     <StackPanel VerticalAlignment="Top">
-                        <StackPanel Orientation="Horizontal"  HorizontalAlignment="Center" Margin="0 30 0 40">
+                        <StackPanel Orientation="Horizontal" MouseDown="StackPanel_MouseDown"  HorizontalAlignment="Center" Margin="0 30 0 40">
                             <Ellipse Width="8" Height="8" Fill="#eb1700"/>
                             <Ellipse Width="8" Height="8" Fill="#ffaf01" Margin="7 0"/>
                             <Ellipse Width="8" Height="8" Fill="#009d00"/>
@@ -39,6 +33,7 @@
                         <uc:Menubutton x:Name="ButtonImage" Icon="Image" MouseDoubleClick="ButtonImage_MouseDoubleClick"/>
                         <uc:Menubutton x:Name="ButtonSupport" Icon="PhoneAlert" MouseDoubleClick="ButtonSupport_MouseDoubleClick"/>
                         <uc:Menubutton x:Name="ButtonSetting" Icon="CogOutline" MouseDoubleClick="ButtonSetting_MouseDoubleClick"/>
+                        <uc:Menubutton x:Name="ButtonConnection" Icon="Link" MouseDoubleClick="ButtonConnection_MouseDoubleClick"/>
                     </StackPanel>
 
                     <uc:Menubutton Icon="Power" VerticalAlignment="Bottom" Margin="0 0 0 15"  MouseDoubleClick="ButtonExit_MouseDoubleClick"/>
@@ -47,7 +42,7 @@
 
             </Border>
 
-            <Grid Visibility="Visible" Name="GridPlaylist" Grid.Column="1" HorizontalAlignment="Left" Height="740" Margin="10,10,0,0" VerticalAlignment="Top" Width="1160">
+            <Grid Visibility="Hidden" Name="GridPlaylist" Grid.Column="1" HorizontalAlignment="Left" Height="740" Margin="10,10,0,0" VerticalAlignment="Top" Width="1160">
                 <Border Margin="30,30,30,30">
                     <Border.Style>
                         <Style TargetType="Border">
@@ -100,7 +95,7 @@
                 </Border>
             </Grid>
 
-            <Grid Visibility="Hidden" Name="GridMusic" Grid.Column="1" HorizontalAlignment="Left" Height="740" Margin="10,10,0,0" VerticalAlignment="Top" Width="1160" >
+            <Grid Visibility="Visible" Name="GridMusic" Grid.Column="1" HorizontalAlignment="Left" Height="740" Margin="10,10,0,0" VerticalAlignment="Top" Width="1160" >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
@@ -235,7 +230,6 @@
                             <ListBox Name="NameVideoFileList" Grid.Row="1" Style="{StaticResource listBoxstyle}" Margin="30 0 30 30"/>
                         </Grid>
                     </Grid>
-
                 </Border>
             </Grid>
 
@@ -394,11 +388,57 @@
                             <uc:Menubutton Grid.Row="4" Icon="Video" HorizontalAlignment="Left" Margin="30 0 30 0"/>
                             <TextBlock Grid.Row="4" Text="Путь для видео" Style="{StaticResource textBlockStyle}" HorizontalAlignment="Left" Margin="60 10 30 10" FontSize="18"/>
                             <Button Grid.Row="4" Click="buttonNewPathVideo_Click" x:Name="buttonNewPathVideo" Content="Выбрать путь" Style="{StaticResource buttonForm}" Margin="300 0 60 0"/>
-
-
-
                         </Grid>
                     </Grid>
+
+                </Border>
+            </Grid>
+            <Grid Visibility="Hidden" Name="GridLink" Grid.Column="1" HorizontalAlignment="Left" Height="740" Margin="10,10,0,0" VerticalAlignment="Top" Width="1160">
+                <Border Margin="30,30,30,30">
+                    <Border.Style>
+                        <Style TargetType="Border">
+                            <Setter Property="BorderBrush" Value="Black"/>
+                            <Setter Property="BorderThickness" Value="1.5"/>
+                        </Style>
+                    </Border.Style>
+
+                    <Grid Background="#1e2e44" Margin="0,0,0,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="2*"/>
+                            <RowDefinition Height="3*"/>
+                        </Grid.RowDefinitions>
+                        <Button x:Name="buttonAllComands" Click="buttonAllComands_Click" Content="Посмотреть команды" Style="{StaticResource buttonForm}" Height="40" Margin="814,23,32,0" VerticalAlignment="Top"/>
+                        <StackPanel Grid.Row="0" Margin="0 30 0 0">
+                            <TextBlock Text="Добавить простейшую команду" FontSize="22" Style="{StaticResource textBlockStyle}"/>
+                            <TextBlock Text="Шаблон для записи команды:" Style="{StaticResource textBlockStyle}" FontSize="20" Foreground="Gray"/>
+                            <TextBlock Text="Команда вызова(ключ)/Ответ, который вы ожидаете от помощника" Style="{StaticResource textBlockStyle}" FontSize="16"/>
+
+                            <Button x:Name="buttonNewComand" Click="buttonNewComand_Click" Content="Вызвать файл с ответами" Style="{StaticResource buttonForm}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1">
+                            <TextBlock Text="Профессиональная настройка" FontSize="22" Style="{StaticResource textBlockStyle}"/>
+                            <Grid Background="#1e2e44" Margin="0,0,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*"/>
+                                </Grid.ColumnDefinitions>
+                                <CheckBox x:Name="SettingCheck" Grid.Column="0" HorizontalAlignment="Right" Content="Согласие на принятие рисков глубокой настройки приложения" Style="{StaticResource chekBoxForm}" Checked="CheckBox_Checked" Click="SettingCheck_Click"/>
+                                <Button Grid.Column="1" Click="InfoButton_Click" MinWidth="350" x:Name="InfoButton" FontWeight="Normal" Content="Посмотреть справку" Style="{StaticResource buttonForm}" FontSize="12" Margin="30 10 60 10" HorizontalAlignment="Left"/>
+                            </Grid>
+
+                            <StackPanel x:Name="StackPannelSettingLink" Visibility="Hidden" Margin="0 50 0 0">
+                                <TextBlock Text="Вы перешли на уровень разработки отдельных команд" Style="{StaticResource textBlockStyle}" FontSize="16"/>
+                                <TextBlock TextWrapping="Wrap" HorizontalAlignment="Left" Style="{StaticResource textBlockStyle}" 
+                                        FontSize="14" Foreground="#b5b5b5" Margin="50 0 50 0"
+                                        Text="На этом уровне вы можете добавлять ключевые слова для открытия любых приложений, добавляться шутки, комплементы, которые может делать вош помощник, но будте аккуратнее, вы работаете с программными файлами  приложения и в случае ,если они будут поврежденны, компания не несёт ответственности за работоспособность приложения, вся разработка в профессиональном режиме осуществляется на свой страх и риск."/>
+                                <Button x:Name="openSettingFile" Foreground="#b80000" Click="openSettingFile_Click" Content="Открыть командный файл" Style="{StaticResource buttonForm}"/>
+
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+
+
                 </Border>
             </Grid>
         </Grid>

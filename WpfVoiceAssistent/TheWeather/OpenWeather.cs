@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace WpfVoiceAssistent.TheWeather
 {
-    internal class OpenWeather
+    public class OpenWeather
     {
         private static OpenWeather WeathersForMethod()
         {
@@ -32,6 +32,13 @@ namespace WpfVoiceAssistent.TheWeather
             return _OpenWeath;
         }
 
+        /// <summary>
+        /// Выдаёт строку для озвучивания с информацие о текущей погоде в СПб
+        /// </summary>
+        /// <param name="_DoWeather">Слово включения (включи, скажи, открой)</param>
+        /// <param name="_voiceRequest">Голосовая команда полностью</param>
+        /// <param name="localDate">Текущее время</param>
+        /// <returns>Строка с информацие о погоде</returns>
         public static string FullWeatherAnswer(string _DoWeather, string _voiceRequest, DateTime localDate)
         {
             OpenWeather _OpenWeath = WeathersForMethod();
@@ -72,7 +79,7 @@ namespace WpfVoiceAssistent.TheWeather
             if (DateTime.Parse(localDate.ToShortTimeString()) > night || DateTime.Parse(localDate.ToShortTimeString()) < morning)
             {
                 if (_voiceRequest == $"{_DoWeather} погоду")
-                    _stringForVoice = "Сейчас ночь";
+                    _stringForVoice = "Сейчас ночь, миссир, лучше отдыхайте";
                 else if (_voiceRequest == $"{_DoWeather} температуру")
                     _stringForVoice = "Температура: " + Math.Round(_OpenWeath.main.temp, 0).ToString();
                 else if (_voiceRequest == $"{_DoWeather} ветер")
@@ -101,15 +108,16 @@ namespace WpfVoiceAssistent.TheWeather
 
 
 
-        public Coord coord;
+        
         public Weather[] weather;
+        public Main main;
+        public Wind wind;
 
         [JsonProperty("base")]
         public string _base;
 
-        public Main main;
+        public Coord coord;
         public int visibility;
-        public Wind wind;
         public Clouds clouds;
         public int dt;
         public Sys sys;

@@ -74,6 +74,8 @@ namespace WpfVoiceAssistent
             sre.LoadGrammar(CreateGrammar.ComplimentsGrammar());
             sre.LoadGrammar(CreateGrammar.StartAndStopInterfaceGrammar());
             sre.LoadGrammar(CreateGrammar.StopWorkTern());
+            sre.LoadGrammar(CreateGrammar.LoopMusicGrammar());
+            sre.LoadGrammar(CreateGrammar.PersonAnswerGrammar());
             sre.RecognizeAsync(RecognizeMode.Multiple);
 
             SelectItemsListBox();
@@ -100,32 +102,46 @@ namespace WpfVoiceAssistent
 
             if (confidence >= 0.60)
             {
+                PersonAnswer(_SpokenText);
 
-                foreach (string _wordForStart in CreateGrammar._ListsForGrammar.StartAll)
+
+                try
                 {
-                    CallStartProtocol(_wordForStart, _SpokenText);
+                    foreach (string _wordForStart in CreateGrammar._ListsForGrammar.StartAll)
+                    {
+                        if (_SpokenText.Substring(0, _SpokenText.IndexOf(" ")).IndexOf($"{_wordForStart}") >= 0)
+                        {
+                            CallStartProtocol(_wordForStart, _SpokenText);
 
-                    CallStartProgram(_wordForStart, _SpokenText);
+                            CallStartProgram(_wordForStart, _SpokenText);
 
-                    CallTheWeather(_wordForStart, _SpokenText);
+                            CallTheWeather(_wordForStart, _SpokenText);
 
-                    CallTheJoke(_wordForStart, _SpokenText);
+                            CallTheJoke(_wordForStart, _SpokenText);
 
-                    CallPlayMusic(_wordForStart, _SpokenText);
+                            CallPlayMusic(_wordForStart, _SpokenText);
 
-                    CallPlayPlaylist(_wordForStart, _SpokenText);
+                            CallPlayPlaylist(_wordForStart, _SpokenText);
 
-                    CallCompliments(_wordForStart, _SpokenText);
+                            CallCompliments(_wordForStart, _SpokenText);
 
-                    CallShowIntarface(_wordForStart, _SpokenText);
+                            CallShowIntarface(_wordForStart, _SpokenText);
 
-                    CallShowVideo(_wordForStart, LocalNameFile, _SpokenText);
+                            CallShowVideo(_wordForStart, LocalNameFile, _SpokenText);
 
-                    CallShowPhoto(_wordForStart, LocalNameFile, _SpokenText);
+                            CallShowPhoto(_wordForStart, LocalNameFile, _SpokenText);
+
+                            
+                        }
+                    }
+                }
+                catch 
+                {
+                    
                 }
                 foreach (string _wordForStop in CreateGrammar._ListsForGrammar.StopAll)
                 {
-                    CallStopMusic(_wordForStop, _SpokenText);
+                    //CallStopMusic(_wordForStop, _SpokenText);
 
                     CallHideIntarface(_wordForStop, _SpokenText);
 
@@ -137,33 +153,90 @@ namespace WpfVoiceAssistent
 
                 CallSettingsValue(_SpokenText);
 
-                WorkWithSystem.CoiseActionWithSystem(_SpokenText);
-
+                CallLoopMusic(_SpokenText);
                 
+                WorkWithSystem.CoiseActionWithSystem(_SpokenText);
 
             }
         }
+
+        private void CallLoopMusic(string _SpokenText)
+        {//Зацикливание музыки
+            foreach (string _valueS in CreateGrammar._ListsForGrammar.AudioName.ToArray())
+            {
+                if (_SpokenText.IndexOf($"повторяй {_valueS}") >= 0)
+                {
+                    if (aud != null)
+                    {
+                        aud.StartLoop();
+
+                        VoicуThisText("Установлено зацикливание музыки");
+
+                    }
+
+
+                    return;
+                }
+                else if (_SpokenText.IndexOf($"не повторяй {_valueS}") >= 0) 
+                {
+                    if (aud != null)
+                    {
+                        aud.StopLoop();
+
+                        VoicуThisText("Прекращено зацикливание музыки");
+
+                    }
+                    return;
+                }
+            }
+
+        }
+
+        private void PersonAnswer(string _SpokenText)
+        {
+            foreach (string _value in CreateGrammar.DictAnswerJSON.Keys)
+            {
+                if (_SpokenText.IndexOf($"{_value}") >= 0)
+                {
+                    VoicуThisText(CreateGrammar.DictAnswerJSON[_value].ToString());
+                }
+            }
+
+        }
+
         private void CallPausePlayNextMusic(string _SpokenText)
         {
             foreach (string _music in CreateGrammar._ListsForGrammar.AudioName.ToArray())
             {
-                if (_SpokenText.IndexOf($"Останови {_music}") >= 0 || _SpokenText.IndexOf($"Останови прейлист") >= 0)
+                if (_SpokenText.IndexOf($"останови {_music}") >= 0 || _SpokenText.IndexOf($"останови прейлист") >= 0)
                 {
                     if (aud != null)
                         aud.PauseSong();
                     SliderNoise.IsEnabled = false;
                 }
-                else if (_SpokenText.IndexOf($"Продолжи {_music}") >= 0 || _SpokenText.IndexOf($"Продолжай {_music}") >= 0)
+                else if (_SpokenText.IndexOf($"продолжи {_music}") >= 0 || _SpokenText.IndexOf($"продолжай {_music}") >= 0)
                 {
-                    aud.StartSong();
+                    if (aud == null)
+                        aud = new Audio.AudioPlayer(@"F:\КурсоваяТРПО\FolderForAudio\remember_-_Kozhura.mp3");
+                    else
+                        aud.StartSong();
+                    
                     SliderNoise.IsEnabled = true;
                 }
-                else if(_SpokenText.IndexOf($"cледующая {_music}") >= 0 || _SpokenText.IndexOf($"cледующую {_music}") >= 0 
-                    || _SpokenText.IndexOf($"некст {_music}") >= 0 || _SpokenText.IndexOf($"другая {_music}") >= 0)
+                else if(_SpokenText.IndexOf($"следующая {_music}") >= 0 || _SpokenText.IndexOf($"cледующую {_music}") >= 0
+                    )//|| _SpokenText.IndexOf($"некст {_music}") >= 0 || _SpokenText.IndexOf($"другая {_music}") >= 0
                 {
                     if (aud != null)
-                        aud.NextSong();
+                        aud.StopSong();
+                    StartRandomSong();
                     SliderNoise.IsEnabled = true;
+                }
+                if (_SpokenText.IndexOf($"выключи {_music}") >= 0 || _SpokenText.IndexOf($"убери {_music}") >= 0 
+                    || _SpokenText.IndexOf($"выключи прейлист") >= 0)
+                {
+                    if (aud != null)
+                        aud.StopSong();
+                    SliderNoise.IsEnabled = false;
                 }
             }
 
@@ -249,12 +322,11 @@ namespace WpfVoiceAssistent
         }
         private void CallStartProtocol(string _wordForStart, string _SpokenText)
         {
-            foreach (string _nameProt in CreateGrammar._ListsForGrammar.NameProtocol)
+            foreach (string[] _nameProt in CreateGrammar.Protocol_List)
             {
-
-                if (_SpokenText.IndexOf(_wordForStart + " " + _nameProt + " протокол") >= 0 || _SpokenText.IndexOf(_wordForStart + " протокол " + _nameProt) >= 0)
+                if (_SpokenText.IndexOf(_wordForStart + " " + _nameProt[1] + " протокол") >= 0 || _SpokenText.IndexOf(_wordForStart + " протокол " + _nameProt[1]) >= 0)
                 {
-                    VoicуThisText("Запускаю " + OpenApplication.StartProtocol(_nameProt));
+                    VoicуThisText("Запускаю " + OpenApplication.StartProtocol(_nameProt[1]));
                     return;
                 }
             }
@@ -263,12 +335,10 @@ namespace WpfVoiceAssistent
         {
             foreach (string _wordGame in CreateGrammar._StartGameWithstartWord[1])
             {
-                if (_SpokenText.IndexOf(_wordForStart) >= 0 & _SpokenText.IndexOf(_wordGame) >= 0)
+                if (_SpokenText.IndexOf(_wordForStart + " " + _wordGame) >= 0)
                 {
-                    string[] ArrayforsinglStart = new string[1] { _wordGame };
-
-                    string _NameForVoice = OpenApplication.StartProgramm(ArrayforsinglStart);
-                    VoicуThisText("Запускаю " + _NameForVoice);
+                     OpenApplication.StartProgramm(_wordGame);
+                    VoicуThisText("Запускаю " + _wordGame);
                     return;
                 }
             } //Запуск Программ
@@ -386,6 +456,7 @@ namespace WpfVoiceAssistent
             try
             {
                 string audioPath = ControlDB.Class.SQLSelectOneItem($"select [Путь] from Директории where [ID Категории] = (select [ID Категории] from Категории where Название = 'аудио')");
+               
 
                 string file = null;
                 if (!string.IsNullOrEmpty(audioPath))
@@ -399,6 +470,7 @@ namespace WpfVoiceAssistent
                         file = rgFiles.ElementAt(R.Next(0, rgFiles.Count())).FullName;
                         aud = new Audio.AudioPlayer(file);
                         SliderNoise.IsEnabled = true;
+                        txtBoxNameMusicForPlaying.Text = "Проигрывается случайная песня";
                     }
                     catch (Exception ex)
                     {
@@ -484,16 +556,7 @@ namespace WpfVoiceAssistent
 
         #region Кнопки бокового меню и музыки
         private void Border_MouseDown(object sender, MouseButtonEventArgs e) { }
-        private void ButtonPlaylist_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            GridPlaylist.Visibility = Visibility.Visible;
-            GridMusic.Visibility = Visibility.Hidden;
-            GridImage.Visibility = Visibility.Hidden;
-            GridAlert.Visibility = Visibility.Hidden;
-            GridSetting.Visibility = Visibility.Hidden;
 
-            SetPlaylist();
-        }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -561,7 +624,26 @@ namespace WpfVoiceAssistent
                 listNewMusic.Items.Add(item);
             }
         }
+        private void ButtonPlaylist_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            GridPlaylist.Visibility = Visibility.Visible;
+            GridMusic.Visibility = Visibility.Hidden;
+            GridImage.Visibility = Visibility.Hidden;
+            GridAlert.Visibility = Visibility.Hidden;
+            GridSetting.Visibility = Visibility.Hidden;
+            GridLink.Visibility = Visibility.Hidden;
+            SetPlaylist();
+        }
+        private void ButtonConnection_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            GridPlaylist.Visibility = Visibility.Hidden;
+            GridMusic.Visibility = Visibility.Hidden;
+            GridImage.Visibility = Visibility.Hidden;
+            GridAlert.Visibility = Visibility.Hidden;
+            GridSetting.Visibility = Visibility.Hidden;
+            GridLink.Visibility = Visibility.Visible;
 
+        }
         private void ButtonMusic_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             SelectItemsListBox();
@@ -572,6 +654,7 @@ namespace WpfVoiceAssistent
             GridImage.Visibility = Visibility.Hidden;
             GridAlert.Visibility = Visibility.Hidden;
             GridSetting.Visibility = Visibility.Hidden;
+            GridLink.Visibility = Visibility.Hidden;
         }
         private void ButtonImage_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -580,6 +663,7 @@ namespace WpfVoiceAssistent
             GridImage.Visibility = Visibility.Visible;
             GridAlert.Visibility = Visibility.Hidden;
             GridSetting.Visibility = Visibility.Hidden;
+            GridLink.Visibility = Visibility.Hidden;
         }
         private void ButtonSupport_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -588,6 +672,7 @@ namespace WpfVoiceAssistent
             GridImage.Visibility = Visibility.Hidden;
             GridAlert.Visibility = Visibility.Visible;
             GridSetting.Visibility = Visibility.Hidden;
+            GridLink.Visibility = Visibility.Hidden;
         }
         private void ButtonSetting_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -596,6 +681,7 @@ namespace WpfVoiceAssistent
             GridImage.Visibility = Visibility.Hidden;
             GridAlert.Visibility = Visibility.Hidden;
             GridSetting.Visibility = Visibility.Visible;
+            GridLink.Visibility = Visibility.Hidden;
 
             ListPathToChange.ItemsSource = ControlDB.Class.SQL_SelectList($"select [Путь] from Директории");
         }
@@ -716,6 +802,7 @@ namespace WpfVoiceAssistent
         {
             if (aud != null)
                 aud.StopSong();
+            aud = null;
             SliderNoise.IsEnabled = false;
             txtBoxNameMusicForPlaying.Text = "Название";
         }
@@ -727,7 +814,7 @@ namespace WpfVoiceAssistent
             else
                 aud.StartSong();
 
-            txtBoxNameMusicForPlaying.Text = "Название песни: Кости";
+            txtBoxNameMusicForPlaying.Text = "Название песни: Кожура";
             SliderNoise.IsEnabled = true;
         }
 
@@ -807,8 +894,80 @@ namespace WpfVoiceAssistent
             MapAdress.Center = new Location(59.707624, 30.787825);
         }
 
+
+
         #endregion
 
+        private void buttonNewComand_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process.Start(@"F:\КурсоваяТРПО\WpfVoiceAssistent\WpfVoiceAssistent\Answer.txt");
+            }
+            catch
+            {
+                MessageBox.Show("Файл был перемещён, обратитесь к Администратору");
+            }
+        }
 
+        private void openSettingFile_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process.Start(@"F:\КурсоваяТРПО\WpfVoiceAssistent\WpfVoiceAssistent\DataForDrammar.json");
+            }
+            catch 
+            {
+                MessageBox.Show("Файл был перемещён, обратитесь к Администратору");
+            }
+        }
+        private void buttonAllComands_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Process.Start(@"F:\КурсоваяТРПО\WpfVoiceAssistent\WpfVoiceAssistent\AllComands.docx");
+            }
+            catch
+            {
+                MessageBox.Show("Файл был перемещён, обратитесь к Администратору");
+            }
+        }
+        private void CheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (SettingCheck.IsChecked == true)
+            {
+                StackPannelSettingLink.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                StackPannelSettingLink.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void SettingCheck_Click(object sender, RoutedEventArgs e)
+        {
+            if (SettingCheck.IsChecked == true)
+            {
+                StackPannelSettingLink.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                StackPannelSettingLink.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void InfoButton_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Вы хотите перейти в режим разработчика. Компания вынуждена вас уведомить, что после нажатия кнопки согласия перехода в этот режим," +
+                " мы перестаём нести ответственность за работоспособность приложения. Все действия выполняемые в этом режиме вы делаете на свой страх и риск." +
+                "После нажатия клавиши согласия, гарантийный срок работы приложения анулируется." +
+                "С уважением, администрация Голосового Помощника  ");
+        }
+
+        private void StackPanel_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
+        }
     }
 }
